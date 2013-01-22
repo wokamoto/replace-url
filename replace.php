@@ -13,11 +13,12 @@ if ( !array_search($plugin, $active_plugins) ) {
 
 // WP のユーザー/パスワードで BASIC 認証
 nocache_headers();
-if ( !is_user_logged_in() ) {
+$capabilities = 'manage_options';
+if ( !is_user_logged_in() || current_user_can($user, $capabilities ) ) {
 	$user = isset($_SERVER["PHP_AUTH_USER"]) ? $_SERVER["PHP_AUTH_USER"] : '';
 	$pwd  = isset($_SERVER["PHP_AUTH_PW"]) ? $_SERVER["PHP_AUTH_PW"] : '';
 	$user = wp_authenticate($user, $pwd);
-	if ( is_wp_error($user) || !user_can($user, 'manage_options' ) ) {
+	if ( is_wp_error($user) || !user_can($user, $capabilities ) ) {
 		// BASIC 認証が必要
 		header('WWW-Authenticate: Basic realm="Please Enter Your Password"');
 		header('HTTP/1.0 401 Unauthorized');
