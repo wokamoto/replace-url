@@ -14,7 +14,7 @@ if ( !array_search($plugin, $active_plugins) ) {
 // WP のユーザー/パスワードで BASIC 認証
 nocache_headers();
 $capabilities = 'manage_options';
-if ( !is_user_logged_in() || current_user_can($user, $capabilities ) ) {
+if ( !is_user_logged_in() ) {
 	$user = isset($_SERVER["PHP_AUTH_USER"]) ? $_SERVER["PHP_AUTH_USER"] : '';
 	$pwd  = isset($_SERVER["PHP_AUTH_PW"]) ? $_SERVER["PHP_AUTH_PW"] : '';
 	$user = wp_authenticate($user, $pwd);
@@ -25,6 +25,8 @@ if ( !is_user_logged_in() || current_user_can($user, $capabilities ) ) {
 		echo 'Authorization Required';
 		die();
 	}
+} else if ( !current_user_can($user, $capabilities ) ) {
+	wp_die('Administrator only.');
 }
 
 $old_site = untrailingslashit(isset($_POST['search']) ? $_POST['search'] : home_url());
