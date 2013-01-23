@@ -33,6 +33,17 @@ $old_site = untrailingslashit(isset($_POST['search']) ? $_POST['search'] : home_
 $new_site = untrailingslashit(isset($_POST['replace']) ? $_POST['replace'] : '');
 $path = ABSPATH;
 
+$home_url = trailingslashit(get_home_url('/'));
+if ( $parsed_home_url = parse_url($home_url)) {
+	$home_url =
+		(isset($parsed_home_url['scheme']) ? $parsed_home_url['scheme'] : 'http') . '//' .
+		(isset($parsed_home_url['host']) ? $parsed_home_url['host'] : '') .
+		(isset($parsed_home_url['port']) ? ':' . $parsed_home_url['port'] : '');
+	unset($parsed_home_url);
+}
+$admin_url = str_replace($home_url, '/', untrailingslashit(admin_url()));
+$includes_url = str_replace($home_url, '/', untrailingslashit(includes_url()));
+
 global $wp_version, $wpdb;
 
 ?>
@@ -41,8 +52,8 @@ global $wp_version, $wpdb;
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>WordPress &rsaquo; Replace Site URL</title>
-<link rel="stylesheet" href="../../../wp-admin/css/install.css?ver=<?php echo $wp_version; ?>" type="text/css" />
-<link rel="stylesheet" href="../../../wp-includes/css/buttons.css?ver=<?php echo $wp_version; ?>" type="text/css" />
+<link rel="stylesheet" href="<?php echo $admin_url; ?>/css/install.css?ver=<?php echo $wp_version; ?>" type="text/css" />
+<link rel="stylesheet" href="<?php echo $includes_url; ?>/css/buttons.css?ver=<?php echo $wp_version; ?>" type="text/css" />
 
 </head>
 <body class="wp-core-ui">
