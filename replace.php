@@ -25,7 +25,7 @@ if ( !is_user_logged_in() ) {
 		echo 'Authorization Required';
 		die();
 	}
-} else if ( !current_user_can($user, $capabilities ) ) {
+} else if ( !current_user_can($capabilities) ) {
 	wp_die('Administrator only.');
 }
 
@@ -35,10 +35,10 @@ $path = ABSPATH;
 
 $home_url = trailingslashit(get_home_url('/'));
 if ( $parsed_home_url = parse_url($home_url)) {
-	$home_url =
-		(isset($parsed_home_url['scheme']) ? $parsed_home_url['scheme'] : 'http') . '//' .
+	$home_url = trailingslashit(
+		(isset($parsed_home_url['scheme']) ? $parsed_home_url['scheme'] : 'http') . '://' .
 		(isset($parsed_home_url['host']) ? $parsed_home_url['host'] : '') .
-		(isset($parsed_home_url['port']) ? ':' . $parsed_home_url['port'] : '');
+		(isset($parsed_home_url['port']) ? ':' . $parsed_home_url['port'] : ''));
 	unset($parsed_home_url);
 }
 $admin_url = str_replace($home_url, '/', untrailingslashit(admin_url()));
@@ -71,12 +71,12 @@ global $wp_version, $wpdb;
 			<td><input name="replace" id="replace" type="text" size="25" value="<?php echo esc_attr($new_site); ?>" /></td>
 		</tr>
 	</table>
-		<p class="step"><input name="submit" type="submit" value="Submit" class="button button-large" /></p>
+		<p class="step"><input name="submit" type="submit" value="<?php _e('Submit'); ?>" class="button button-large" /></p>
 </form>
 <?php
 if ( !empty($new_site) && isset($_POST['replcae_nonce']) && wp_verify_nonce($_POST['replcae_nonce'],'replcae_action') ) {
 	if ( !class_exists('ReplaceSiteURL') )
-		require_once('./class-replace_site_url.php');
+		require_once(dirname(__FILE__).'/class-replace_site_url.php');
 	$replace = new ReplaceSiteURL($new_site, $path, $old_site);
 
 	printf("<p>Replace <strong>'%s'</strong> to <strong>'%s'</strong> ...</p>\n", $replace->old_site, $replace->new_site);
