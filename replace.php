@@ -19,7 +19,6 @@ if ( !is_user_logged_in() ) {
 	$pwd  = isset($_SERVER["PHP_AUTH_PW"]) ? $_SERVER["PHP_AUTH_PW"] : '';
 	$user = wp_authenticate($user, $pwd);
 	if ( is_wp_error($user) || !user_can($user, $capabilities ) ) {
-		// BASIC 認証が必要
 		header('WWW-Authenticate: Basic realm="Please Enter Your Password"');
 		header('HTTP/1.0 401 Unauthorized');
 		echo 'Authorization Required';
@@ -38,13 +37,14 @@ if ( $parsed_home_url = parse_url($home_url)) {
 	$home_url = trailingslashit(
 		(isset($parsed_home_url['scheme']) ? $parsed_home_url['scheme'] : 'http') . '://' .
 		(isset($parsed_home_url['host']) ? $parsed_home_url['host'] : '') .
-		(isset($parsed_home_url['port']) ? ':' . $parsed_home_url['port'] : ''));
+		(isset($parsed_home_url['port']) ? ':' . $parsed_home_url['port'] : '')
+		);
 	unset($parsed_home_url);
 }
-$admin_url = str_replace($home_url, '/', untrailingslashit(admin_url()));
+$admin_url    = str_replace($home_url, '/', untrailingslashit(admin_url()));
 $includes_url = str_replace($home_url, '/', untrailingslashit(includes_url()));
 
-global $wp_version, $wpdb;
+global $wp_version;
 
 ?>
 <!DOCTYPE html>
@@ -75,6 +75,8 @@ global $wp_version, $wpdb;
 </form>
 <?php
 if ( !empty($new_site) && isset($_POST['replcae_nonce']) && wp_verify_nonce($_POST['replcae_nonce'],'replcae_action') ) {
+	global $wpdb;
+
 	if ( !class_exists('ReplaceSiteURL') )
 		require_once(dirname(__FILE__).'/class-replace_site_url.php');
 	$replace = new ReplaceSiteURL($new_site, $path, $old_site);
